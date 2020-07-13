@@ -22,6 +22,8 @@
 
   const data = labels.map((label, index) => ({
     colorIndex: index,
+    // Using a tweened store provides animated changes to bar heights.
+    // All values start a zero.
     height: tweened(0, {duration: 500}),
     label
   }));
@@ -33,11 +35,13 @@
   // A "value" property with a random value from 1 to 10
   // is added to each object.
   function setRandomData() {
-    const count = random(labels.length);
     const shuffledLabels = labels.sort(() => 0.5 - Math.random());
+    const count = random(labels.length);
     const labelSet = new Set(shuffledLabels.slice(0, count));
 
     for (const item of data) {
+      // Generate a random value for all the randomly selected labels
+      // and use zero for all the others.
       item.value = labelSet.has(item.label) ? random(10) : 0;
     }
 
@@ -47,7 +51,9 @@
   setRandomData();
 </script>
 
+<!-- This passes ALL the data, but some items have a zero value. -->
 <BarChart {data} {height} {width} />
+
 <div>
   <button on:click={setRandomData}>Update</button>
 </div>

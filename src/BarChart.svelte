@@ -11,6 +11,7 @@
   const LEFT_PADDING = 30;
   const RIGHT_PADDING = 10;
   const TOP_PADDING = 10;
+  const SPACE = 10; // between bars
 
   const usableHeight = height - TOP_PADDING - BOTTOM_PADDING;
   const usableWidth = width - LEFT_PADDING - RIGHT_PADDING;
@@ -31,39 +32,20 @@
     '#b15928'
   ];
 
-  const space = 10; // between bars
-
   let maxValue = 0;
 
+  // We only want to draw a bar for items whose value is not zero.
   $: dataStaying = data.filter(d => d.value);
+
   $: barWidth = Math.round(usableWidth / dataStaying.length);
+
   $: maxValue = dataStaying.reduce((acc, d) => Math.max(acc, d.value), 0);
 
+  // Change the value of the height tweened store for each item.
   $: for (const item of data) {
     item.height.set((item.value / maxValue) * usableHeight);
   }
 
-  function getHeight(obj) {
-    const height = maxValue
-      ? Math.round((obj.value / maxValue) * (usableHeight - 1))
-      : 0;
-    obj.height.set(height);
-    return obj.height; // a store
-  }
-
-  // This returns a text color to use on a given background color.
-  function getTextColor(bgColor) {
-    // Convert the hex background color to its decimal components.
-    const red = parseInt(bgColor.substring(1, 3), 16);
-    const green = parseInt(bgColor.substring(3, 5), 16);
-    const blue = parseInt(bgColor.substring(5, 7), 16);
-
-    // Compute the "relative luminance".
-    const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
-
-    // Use dark text on light backgrounds and vice versa.
-    return luminance > 0.5 ? 'black' : 'white';
-  }
 </script>
 
 <svg {height} {width}>
@@ -71,9 +53,8 @@
     <Bar
       color={colors[obj.colorIndex]}
       heightStore={obj.height}
-      textColor={getTextColor(colors[obj.colorIndex])}
       {usableHeight}
-      width={barWidth - space}
+      width={barWidth - SPACE}
       value={obj.value}
       x={LEFT_PADDING + barWidth * index} />
   {/each}
@@ -84,6 +65,7 @@
     width={LEFT_PADDING}
     x={0}
     y={TOP_PADDING} />
+
   <XAxis
     {data}
     width={usableWidth}
