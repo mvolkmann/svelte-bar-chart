@@ -1,17 +1,28 @@
 <script>
-  // We cannot do all of this in the BarChart component
-  // because we want to auto-subscribe to the height stores and
-  // that can only be done when the store is in a top-level variable,
-  // not when it is a property of an object.
-  export let color;
-  export let heightStore;
-  export let usableHeight;
-  export let value;
+  export let bottomY;
+  export let data;
+  export let padding;
   export let width;
   export let x;
 
-  const SPACE = 10; // between bars
-  const TOP_PADDING = 10;
+  // These colors are taken from d3.schemePaired.
+  const COLORS = [
+    '#a6cee3',
+    '#1f78b4',
+    '#b2df8a',
+    '#33a02c',
+    '#fb9a99',
+    '#e31a1c',
+    '#fdbf6f',
+    '#ff7f00',
+    '#cab2d6',
+    '#6a3d9a',
+    '#ffff99',
+    '#b15928'
+  ];
+
+  $: color = COLORS[data.colorIndex];
+  $: heightStore = data.height;
 
   // This returns a text color to use on a given background color.
   function getTextColor(bgColor) {
@@ -32,15 +43,15 @@
   <rect
     height={$heightStore}
     {width}
-    x={SPACE / 2}
-    y={TOP_PADDING + usableHeight - $heightStore}
+    x={padding}
+    y={bottomY - $heightStore}
     style={`fill: ${color}`} />
-  {#if value}
+  {#if data.value}
     <text
-      x={SPACE / 2 + width / 2}
-      y={TOP_PADDING + usableHeight - $heightStore + 20}
+      x={padding + width / 2}
+      y={bottomY - $heightStore + 20}
       style={`fill: ${getTextColor(color)}`}>
-      {value}
+      {data.value}
     </text>
   {/if}
 </g>
