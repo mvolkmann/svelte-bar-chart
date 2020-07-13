@@ -7,9 +7,9 @@
   const spaceAfterTick = 3;
   const tickHeight = 5;
 
-  $: halfBarWidth = width / data.length / 2;
-
-  $: delta = width / data.length;
+  $: dataSubset = data.filter(d => d.value);
+  $: halfBarWidth = width / dataSubset.length / 2;
+  $: delta = width / dataSubset.length;
 
   $: getTransform = index =>
     `translate(5 20) ` +
@@ -20,7 +20,7 @@
 
 <g transform={`translate(${x}, ${y})`}>
   <line x1="0" y1="0" x2={width} y2="0" stroke="black" />
-  {#each data as obj, index}
+  {#each dataSubset as obj, index}
     <line
       x1={getX(index)}
       y1="0"

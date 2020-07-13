@@ -1,5 +1,5 @@
 <script>
-  import {flip} from 'svelte/animate';
+  import Bar from './Bar.svelte';
   import XAxis from './XAxis.svelte';
   import YAxis from './YAxis.svelte';
 
@@ -33,11 +33,23 @@
 
   const space = 10; // between bars
 
-  $: barWidth = Math.round(usableWidth / data.length);
-  $: maxValue = data.reduce((acc, obj) => Math.max(acc, obj.value), 0);
+  let maxValue = 0;
 
-  const getHeight = data =>
-    Math.round((data.value / maxValue) * (usableHeight - 1));
+  $: dataSubset = data.filter(d => d.value);
+  $: barWidth = Math.round(usableWidth / dataSubset.length);
+  $: maxValue = dataSubset.reduce((acc, d) => Math.max(acc, d.value), 0);
+
+  $: for (const item of data) {
+    item.height.set((item.value / maxValue) * usableHeight);
+  }
+
+  function getHeight(obj) {
+    const height = maxValue
+      ? Math.round((obj.value / maxValue) * (usableHeight - 1))
+      : 0;
+    obj.height.set(height);
+    return obj.height; // a store
+  }
 
   // This returns a text color to use on a given background color.
   function getTextColor(bgColor) {
@@ -55,23 +67,15 @@
 </script>
 
 <svg {height} {width}>
-  {#each data as obj, index (obj.label)}
-    <g
-      animate:flip
-      transform={`translate(${LEFT_PADDING + barWidth * index}, 0)`}>
-      <rect
-        height={getHeight(obj)}
-        width={barWidth - space}
-        x={space / 2}
-        y={TOP_PADDING + usableHeight - getHeight(obj)}
-        style={`fill: ${colors[index]}`} />
-      <text
-        x={space / 2 + (barWidth - space) / 2}
-        y={TOP_PADDING + usableHeight - getHeight(obj) + 20}
-        style={`fill: ${getTextColor(colors[index])}`}>
-        {obj.value}
-      </text>
-    </g>
+  {#each dataSubset as obj, index (obj.label)}
+    <Bar
+      color={colors[obj.colorIndex]}
+      heightStore={obj.height}
+      textColor={getTextColor(colors[obj.colorIndex])}
+      {usableHeight}
+      width={barWidth - space}
+      value={obj.value}
+      x={LEFT_PADDING + barWidth * index} />
   {/each}
 
   <YAxis
@@ -90,14 +94,5 @@
 <style>
   svg {
     background-color: white;
-  }
-
-  rect {
-    stroke: black;
-    stroke-width: 1;
-  }
-
-  text {
-    text-anchor: middle;
   }
 </style>
