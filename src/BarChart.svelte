@@ -35,9 +35,9 @@
 
   let maxValue = 0;
 
-  $: dataSubset = data.filter(d => d.value);
-  $: barWidth = Math.round(usableWidth / dataSubset.length);
-  $: maxValue = dataSubset.reduce((acc, d) => Math.max(acc, d.value), 0);
+  $: dataStaying = data.filter(d => d.value);
+  $: barWidth = Math.round(usableWidth / dataStaying.length);
+  $: maxValue = dataStaying.reduce((acc, d) => Math.max(acc, d.value), 0);
 
   $: for (const item of data) {
     item.height.set((item.value / maxValue) * usableHeight);
@@ -67,7 +67,7 @@
 </script>
 
 <svg {height} {width}>
-  {#each dataSubset as obj, index (obj.label)}
+  {#each dataStaying as obj, index (obj.label)}
     <Bar
       color={colors[obj.colorIndex]}
       heightStore={obj.height}

@@ -18,12 +18,14 @@
     x={SPACE / 2}
     y={TOP_PADDING + usableHeight - $heightStore}
     style={`fill: ${color}`} />
-  <text
-    x={SPACE / 2 + width / 2}
-    y={TOP_PADDING + usableHeight - $heightStore + 20}
-    style={`fill: ${textColor}`}>
-    {value}
-  </text>
+  {#if value}
+    <text
+      x={SPACE / 2 + width / 2}
+      y={TOP_PADDING + usableHeight - $heightStore + 20}
+      style={`fill: ${textColor}`}>
+      {value}
+    </text>
+  {/if}
 </g>
 
 <style>
